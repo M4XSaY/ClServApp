@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("ClServApp.Server")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+53e7b8c44c8f0f6516b2054bbbfb410cfe1f3e55")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+6ebe104bc831d6bc86d262f39e95485bf41fa4c0")]
 [assembly: System.Reflection.AssemblyProductAttribute("ClServApp.Server")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ClServApp.Server")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

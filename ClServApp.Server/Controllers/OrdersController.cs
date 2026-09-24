@@ -21,6 +21,7 @@ namespace ClServApp.Server.Controllers
             try
             {
                 var orders = await _databaseService.GetOrdersAsync();
+
                 return Ok(orders);
             }
             catch (Exception ex)
@@ -38,7 +39,9 @@ namespace ClServApp.Server.Controllers
         {
             try
             {
-                var details = await _databaseService.GetOrderDetailsAsync(id);
+                var details =
+                    await _databaseService.GetOrderDetailsAsync(id);
+
                 return Ok(details);
             }
             catch (Exception ex)
@@ -51,42 +54,89 @@ namespace ClServApp.Server.Controllers
             }
         }
 
-        // ==========================================
-        // Добавленные методы для создания заказов
-        // ==========================================
-
-        [HttpGet("form-data")]
-        public async Task<IActionResult> GetFormData()
-        {
-            try
-            {
-                var clients = await _databaseService.GetClientsAsync();
-                var products = await _databaseService.GetProductsAsync();
-                return Ok(new { clients, products });
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new
-                {
-                    message = "Ошибка при загрузке данных для формы.",
-                    error = ex.Message
-                });
-            }
-        }
-
         [HttpPost]
-        public async Task<IActionResult> CreateOrder([FromBody] OrderCreateDto dto)
+        public async Task<IActionResult> AddOrder([FromBody] OrderCreate order)
         {
             try
             {
-                await _databaseService.CreateOrderAsync(dto);
-                return Ok(new { message = "Заказ успешно создан" });
+                await _databaseService.AddOrderAsync(order);
+
+                return Ok(new
+                {
+                    message = "Заказ успешно создан."
+                });
             }
             catch (Exception ex)
             {
                 return BadRequest(new
                 {
                     message = "Ошибка при создании заказа.",
+                    error = ex.Message
+                });
+            }
+        }
+
+        [HttpGet("{id}/edit")]
+        public async Task<ActionResult<OrderEdit>> GetOrderForEdit(int id)
+        {
+            try
+            {
+                var order =
+                    await _databaseService.GetOrderForEditAsync(id);
+
+                return Ok(order);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    message = "Ошибка при получении заказа для редактирования.",
+                    error = ex.Message
+                });
+            }
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateOrder(
+    int id,
+    [FromBody] OrderEdit order)
+        {
+            try
+            {
+                await _databaseService.UpdateOrderAsync(id, order);
+
+                return Ok(new
+                {
+                    message = "Заказ успешно изменён."
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    message = "Ошибка при изменении заказа.",
+                    error = ex.Message
+                });
+            }
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteOrder(int id)
+        {
+            try
+            {
+                await _databaseService.DeleteOrderAsync(id);
+
+                return Ok(new
+                {
+                    message = "Заказ успешно удалён."
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new
+                {
+                    message = "Ошибка при удалении заказа.",
                     error = ex.Message
                 });
             }

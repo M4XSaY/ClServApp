@@ -114,7 +114,9 @@ body {
 
 .toolbar {
     display: flex;
-    justify-content: flex-end;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 8px;
     margin-bottom: 15px;
 }
 
@@ -123,19 +125,21 @@ button {
 }
 
 .toolbar button {
-    padding: 10px 18px;
+    /* Сделать стиль кнопок в тулбаре таким же, как в таблице "Товары" */
+    padding: 5px 7px;
+    font-size: 16px;
 
     border: none;
-    border-radius: 6px;
+    border-radius: 5px;
 
-    background: #333;
-    color: white;
+    background: transparent;
+    color: inherit;
 
     cursor: pointer;
 }
 
 .toolbar button:hover {
-    background: #555;
+    background: #f0f0f0;
 }
 
 
@@ -259,6 +263,8 @@ tbody tr:hover {
     color: #777;
 
     cursor: pointer;
+    padding: 5px 7px;
+    border-radius: 5px;
 }
 
 .close-button:hover {
@@ -362,4 +368,385 @@ tbody tr:hover {
     gap: 10px;
 
     margin-top: 10px;
+}
+
+.order-item-add {
+    display: grid;
+    grid-template-columns: 1fr 120px auto;
+    gap: 10px;
+    align-items: center;
+}
+
+.order-items-block {
+    margin-top: 20px;
+}
+
+.order-items-block h4 {
+    margin: 0 0 12px;
+}
+
+#orderItemsList {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.order-item-row {
+    display: grid;
+    grid-template-columns: 1fr 90px 120px 40px;
+    gap: 10px;
+    align-items: center;
+
+    padding: 10px 12px;
+
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    background: #f9fafb;
+}
+
+.order-item-name {
+    font-weight: 500;
+}
+
+.order-item-quantity {
+    text-align: center;
+}
+
+.order-item-price {
+    text-align: right;
+}
+
+.remove-order-item {
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-size: 18px;
+}
+
+.empty-order-items {
+    padding: 18px;
+    text-align: center;
+    color: #888;
+    border: 1px dashed #ccc;
+    border-radius: 8px;
+}
+
+.order-total-preview {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    margin-top: 15px;
+    padding-top: 15px;
+
+    border-top: 1px solid #ddd;
+
+    font-size: 18px;
+}
+
+.order-total-preview strong {
+    font-size: 20px;
+}
+
+/* ==========================================
+   Модальное окно удаления
+   ========================================== */
+
+.delete-modal-content {
+    max-width: 500px;
+}
+
+.delete-modal-body {
+    padding: 25px 30px;
+}
+
+.delete-warning {
+    font-size: 18px;
+    margin: 0 0 15px;
+}
+
+.delete-warning strong {
+    font-weight: 700;
+}
+
+.delete-description {
+    margin: 0;
+    color: #666;
+    line-height: 1.5;
+}
+
+.modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    padding: 0 30px 25px;
+}
+
+.btn-danger {
+    border: none;
+    background: #dc3545;
+    color: white;
+    padding: 5px 7px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background 0.2s;
+}
+
+.btn-danger:hover {
+    background: #bb2d3b;
+}
+
+.btn-secondary {
+    border: 1px solid #ccc;
+    background: #f5f5f5;
+    color: #333;
+    padding: 5px 7px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background 0.2s;
+}
+
+.btn-secondary:hover {
+    background: #e9e9e9;
+}
+
+
+/* ==========================================
+   Уведомления
+   ========================================== */
+
+.toast {
+    position: fixed;
+    right: 25px;
+    bottom: 25px;
+
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    min-width: 280px;
+    max-width: 450px;
+
+    padding: 14px 18px;
+
+    background: white;
+    border-radius: 8px;
+
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+
+    font-size: 14px;
+
+    z-index: 2000;
+
+    opacity: 1;
+    transform: translateY(0);
+
+    transition:
+        opacity 0.25s ease,
+        transform 0.25s ease;
+}
+
+.toast.hidden {
+    display: none;
+}
+
+.toast.success {
+    border-left: 4px solid #28a745;
+}
+
+.toast.error {
+    border-left: 4px solid #dc3545;
+}
+
+#toastIcon {
+    font-size: 18px;
+}
+
+#toastMessage {
+    line-height: 1.4;
+}
+
+/* ==========================================
+   Фильтры товаров
+   ========================================== */
+
+.products-filters {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.search-box {
+    flex: 1;
+    min-width: 250px;
+}
+
+.search-box input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 10px 14px;
+    border: 1px solid #d5d5d5;
+    border-radius: 6px;
+    font-size: 14px;
+    outline: none;
+}
+
+.search-box input:focus {
+    border-color: #999;
+}
+
+.filter-box select {
+    min-width: 200px;
+    padding: 10px 14px;
+    border: 1px solid #d5d5d5;
+    border-radius: 6px;
+    font-size: 14px;
+    background: white;
+    cursor: pointer;
+}
+
+.table-actions {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+}
+
+.action-button {
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-size: 16px;
+    padding: 5px 7px;
+    border-radius: 5px;
+}
+
+.action-button:hover {
+    background: #f0f0f0;
+}
+
+/* Стили кнопок в панели действий (как на странице "Товары") */
+.page-actions {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.page-actions .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+
+    padding: 6px 10px;
+    font-size: 14px;
+
+    background: #fff;
+    border: 1px solid #d0d6db;
+    color: #333;
+    border-radius: 6px;
+    cursor: pointer;
+
+    box-shadow: 0 1px 0 rgba(0,0,0,0.02);
+}
+
+.page-actions .btn-primary:hover {
+    background: #f7f9fb;
+}
+
+.page-actions button[id^="refresh"],
+.toolbar button {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+
+    padding: 6px 10px;
+    font-size: 14px;
+
+    background: #fff;
+    border: 1px solid #d0d6db;
+    color: #333;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.page-actions button[id^="refresh"]:hover,
+.toolbar button:hover {
+    background: #f7f9fb;
+}
+
+/* Таблица: визуальное оформление, как в примере */
+.table-card {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+
+    box-shadow: 0 6px 18px rgba(24,39,58,0.06);
+}
+
+.table-card table thead th {
+    background: #fafafa;
+    font-weight: 700;
+    color: #222;
+    padding: 18px 20px;
+    border-bottom: 1px solid #ececec;
+}
+
+.table-card table tbody td {
+    padding: 18px 20px;
+    font-size: 15px;
+    color: #333;
+}
+
+.table-card table tbody tr:hover {
+    background: #fbfbfb;
+}
+
+/* Скругление верхних углов у заголовка таблицы */
+.table-card table thead th:first-child {
+    border-top-left-radius: 12px;
+}
+
+.table-card table thead th:last-child {
+    border-top-right-radius: 12px;
+}
+
+/* Кнопки действий в строке */
+.table-actions .edit-button {
+    color: #ff7a3d; /* оранжевый как в образце */
+    font-size: 16px;
+}
+
+.table-actions .delete-button {
+    color: #9aa0a6; /* серый корзины */
+    font-size: 16px;
+}
+
+/* Для таблицы клиентов – фиксированная разметка и перенос длинных строк */
+#clientsPage table {
+    table-layout: fixed;
+    width: 100%;
+}
+
+#clientsPage th,
+#clientsPage td {
+    word-break: break-word;       /* перенос длинных слов */
+    white-space: normal;          /* разрешить перенос строк */
+    padding: 10px 12px;           /* уменьшить отступы */
+    font-size: 13px;              /* немного уменьшить шрифт */
+}
+
+/* Особенно для колонки "Адрес доставки" */
+#clientsPage td:nth-child(7) {
+    max-width: 180px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Кнопки действий – фиксированная ширина */
+#clientsPage .table-actions {
+    white-space: nowrap;
+    min-width: 70px;
 }
