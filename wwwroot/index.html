@@ -1,0 +1,925 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+	<head>
+		<meta charset="UTF-8"/>
+			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+				<title>Компания-поставщик алкогольной продукции</title>
+
+				<link rel="stylesheet" href="css/style.css"/>
+</head>
+
+	<body>
+
+		<div class="app">
+
+			<!-- Боковое меню -->
+			<aside class="sidebar">
+
+				<div class="logo">
+					<div class="logo-title">АлкоПоставка</div>
+					<div class="logo-subtitle">Информационная система</div>
+				</div>
+
+				<nav class="menu">
+
+					<button class="menu-item active" data-page="products">
+						Товары
+					</button>
+
+					<button class="menu-item" data-page="clients">
+						Клиенты
+					</button>
+
+					<button class="menu-item" data-page="orders">
+						Заказы
+					</button>
+
+					<div class="menu-item" data-page="employees">
+						<span class="menu-icon">👤</span>
+						<span>Сотрудники</span>
+					</div>
+
+					<button class="menu-item" data-page="stock">
+						Склад
+					</button>
+
+				</nav>
+
+			</aside>
+
+
+			<!-- Основная область -->
+			<main class="main">
+
+				<header class="topbar">
+					<div>
+						<h1 id="pageTitle">Товары</h1>
+						<p id="pageDescription">
+							Список алкогольной продукции
+						</p>
+					</div>
+
+					<div class="user-info">
+						Менеджер по продажам
+					</div>
+				</header>
+
+
+				<section class="content">
+
+					<!-- Товары -->
+					<div id="productsPage" class="page">
+
+						<div class="products-filters">
+
+    <div class="search-box">
+        <input
+            type="text"
+            id="productSearch"
+            placeholder="🔍 Поиск по названию товара..."
+            autocomplete="off">
+    </div>
+
+    <div class="filter-box">
+        <select id="productCategoryFilter">
+            <option value="">Все категории</option>
+        </select>
+    </div>
+
+</div>
+
+<!-- Модальное окно удаления клиента -->
+<div id="deleteClientModal" class="modal hidden">
+	<input type="hidden" id="editingClientId">
+
+	<div class="modal-content delete-modal-content">
+
+		<div class="modal-header">
+			<h2>Удаление клиента</h2>
+
+			<button
+				type="button"
+				class="modal-close"
+				id="closeDeleteClientModal">
+				×
+			</button>
+		</div>
+
+		<div class="modal-body delete-modal-body">
+
+			<p class="delete-warning">
+				Вы действительно хотите удалить клиента
+				<strong id="deleteClientName"></strong>?
+			</p>
+
+			<p class="delete-description">
+				Если у клиента есть связанные заказы, удаление может быть запрещено.
+			</p>
+
+		</div>
+
+		<div class="modal-footer">
+
+			<button
+				type="button"
+				class="btn-secondary"
+				id="cancelDeleteClient">
+				Отмена
+			</button>
+
+			<button
+				type="button"
+				class="btn-danger"
+				id="confirmDeleteClient">
+				Удалить
+			</button>
+
+		</div>
+
+	</div>
+
+</div>
+						
+						<div class="page-actions">
+							<button
+								type="button"
+								class="btn-primary"
+								id="addProductButton">
+								➕ Добавить товар
+							</button>
+
+							<button
+								type="button"
+								id="refreshProductsButton">
+								🔄 Обновить
+							</button>
+						</div>
+						
+						
+						<div class="table-card">
+
+							<table>
+								<thead>
+									<tr>
+										<th>ID</th>
+										<th>Название</th>
+										<th>Категория</th>
+										<th>Тип алкоголя</th>
+										<th>Крепость</th>
+										<th>Объём</th>
+										<th>Цена</th>
+										<th>Действия</th>
+									</tr>
+								</thead>
+
+								<tbody id="productsTable"></tbody>
+							</table>
+
+						</div>
+
+					</div>
+
+
+					<!-- Модальное окно товара -->
+<div id="productModal" class="modal hidden">
+
+    <div class="modal-content">
+
+        <div class="modal-header">
+            <h2 id="productModalTitle">Добавление товара</h2>
+
+            <button
+                type="button"
+                class="modal-close"
+                id="closeProductModal">
+                ×
+            </button>
+        </div>
+
+        <form id="productForm" class="entity-form">
+
+            <div class="form-group">
+                <label for="productName">
+                    Название товара
+                </label>
+
+                <input
+                    type="text"
+                    id="productName"
+                    required>
+            </div>
+
+
+            <div class="form-group">
+                <label for="productAlcoholType">
+                    Тип алкоголя
+                </label>
+
+                <input
+                    type="text"
+                    id="productAlcoholType"
+                    required>
+            </div>
+
+
+            <div class="form-row">
+
+                <div class="form-group">
+                    <label for="productStrength">
+                        Крепость (%)
+                    </label>
+
+                    <input
+                        type="number"
+                        id="productStrength"
+                        min="0"
+                        step="0.1"
+                        required>
+                </div>
+
+
+                <div class="form-group">
+                    <label for="productVolume">
+                        Объём (л)
+                    </label>
+
+                    <input
+                        type="number"
+                        id="productVolume"
+                        min="0"
+                        step="0.01"
+                        required>
+                </div>
+
+            </div>
+
+
+            <div class="form-group">
+                <label for="productPrice">
+                    Цена за единицу (₽)
+                </label>
+
+                <input
+                    type="number"
+                    id="productPrice"
+                    min="0"
+                    step="0.01"
+                    required>
+            </div>
+
+
+            <div class="form-group">
+                <label for="productCategory">
+                    Категория
+                </label>
+
+                <select
+                    id="productCategory"
+                    required>
+
+                    <option value="">
+                        Выберите категорию
+                    </option>
+
+                </select>
+            </div>
+
+
+            <div class="modal-footer">
+
+                <button
+                    type="button"
+                    class="btn-secondary"
+                    id="cancelProduct">
+                    Отмена
+                </button>
+
+                <button
+                    type="submit"
+                    class="btn-primary"
+                    id="saveProductButton">
+                    Сохранить
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+					
+					<!-- Модальное окно удаления товара -->
+<div id="deleteProductModal" class="modal hidden">
+
+    <div class="modal-content delete-modal-content">
+
+        <div class="modal-header">
+            <h2>Удаление товара</h2>
+
+            <button
+                type="button"
+                class="modal-close"
+                id="closeDeleteProductModal">
+                ×
+            </button>
+        </div>
+
+        <div class="modal-body delete-modal-body">
+
+            <p class="delete-warning">
+                Вы действительно хотите удалить товар
+                <strong id="deleteProductName"></strong>?
+            </p>
+
+            <p class="delete-description">
+                Если товар уже используется в существующих заказах,
+                система не позволит его удалить.
+            </p>
+
+        </div>
+
+        <div class="modal-footer">
+
+            <button
+                type="button"
+                class="btn-secondary"
+                id="cancelDeleteProduct">
+                Отмена
+            </button>
+
+            <button
+                type="button"
+                class="btn-danger"
+                id="confirmDeleteProduct">
+                Удалить
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+					
+					<!-- Клиенты -->
+					<div id="clientsPage" class="page hidden">
+
+                        <div class="section-tools">
+                            <div class="search-box">
+                                <input type="text" id="clientSearch"
+                                       placeholder="Поиск по клиентам..." autocomplete="off">
+                            </div>
+                            <div class="page-actions">
+                                <button type="button" class="btn-primary" id="addClientButton">➕ Добавить клиента</button>
+                                <button type="button" id="refreshClients">🔄 Обновить</button>
+                            </div>
+                        </div>
+
+						<div class="table-card">
+
+							<table>
+								<thead>
+									<tr>
+										<th>ID</th>
+										<th>Наименование</th>
+										<th>Тип</th>
+										<th>ИНН</th>
+										<th>Телефон</th>
+										<th>Email</th>
+										<th>Адрес доставки</th>
+										<th>Действия</th>
+									</tr>
+								</thead>
+
+								<tbody id="clientsTable"></tbody>
+							</table>
+
+						</div>
+						
+						<div id="clientModal" class="modal hidden">
+
+    <div class="modal-content">
+
+        <div class="modal-header">
+
+            <h2>Добавление клиента</h2>
+
+            <button id="closeClientModal"
+                    class="close-button">
+                ×
+            </button>
+
+        </div>
+
+        <form id="clientForm" class="entity-form">
+
+            <label>
+                Наименование
+                <input
+                    type="text"
+                    id="clientName"
+                    required>
+            </label>
+
+            <label>
+                Тип клиента
+
+                <select id="clientType" required>
+                    <option value="Юридическое лицо">
+                        Юридическое лицо
+                    </option>
+
+                    <option value="Физическое лицо">
+                        Физическое лицо
+                    </option>
+                </select>
+
+            </label>
+
+            <label>
+                ИНН
+                <input
+                    type="text"
+                    id="clientInn">
+            </label>
+
+            <label>
+                Телефон
+                <input
+                    type="text"
+                    id="clientPhone"
+                    required>
+            </label>
+
+            <label>
+                Email
+                <input
+                    type="email"
+                    id="clientEmail">
+            </label>
+
+            <label>
+                Адрес доставки
+                <input
+                    type="text"
+                    id="clientAddress"
+                    required>
+            </label>
+
+            <div class="form-actions">
+
+                <button type="submit">
+                    Сохранить
+                </button>
+
+                <button
+                    type="button"
+                    id="cancelClient">
+                    Отмена
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+					</div>
+
+
+					<!-- Заказы -->
+					<div id="ordersPage" class="page hidden">
+
+                        <div class="section-tools">
+                            <div class="search-box">
+                                <input type="text" id="orderSearch"
+                                       placeholder="Поиск по заказам..." autocomplete="off">
+                            </div>
+                            <div class="page-actions">
+                                <button type="button" class="btn-primary" id="addOrderButton">➕ Создать заказ</button>
+                                <button type="button" id="refreshOrders">🔄 Обновить</button>
+                            </div>
+                        </div>
+
+						<div class="table-card">
+
+							<table>
+								<thead>
+									<tr>
+										<th>ID</th>
+										<th>Дата</th>
+										<th>Клиент</th>
+										<th>Ответственный</th>
+										<th>Статус</th>
+										<th>Сумма</th>
+										<th></th>
+									</tr>
+								</thead>
+
+								<tbody id="ordersTable"></tbody>
+							</table>
+
+						</div>
+
+					</div>
+
+
+					<!-- Склад -->
+					<div id="stockPage" class="page hidden">
+
+    <div class="section-tools">
+        <div class="search-box">
+            <input type="text" id="stockSearch"
+                   placeholder="Поиск по складу, товару, типу..." autocomplete="off">
+        </div>
+        <div class="page-actions">
+            <button type="button" class="btn-primary" id="addStockButton">➕ Добавить позицию</button>
+            <button type="button" id="refreshStock">🔄 Обновить</button>
+        </div>
+    </div>
+
+    <div id="lowStockBlock" class="warning-block hidden">
+
+        <div class="warning-title">
+            Требуется пополнение
+        </div>
+
+        <div id="lowStockContent"></div>
+
+    </div>
+
+    <div class="table-card">
+
+        <table>
+
+            <thead>
+                <tr>
+                    <th>Склад</th>
+                    <th>Товар</th>
+                    <th>Тип</th>
+                    <th>Количество</th>
+                    <th>Минимальный запас</th>
+                    <th>Действия</th>
+                </tr>
+            </thead>
+
+            <tbody id="stockTable"></tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+					<!-- Сотрудники -->
+					<div id="employeesPage" class="page hidden">
+
+                        <div class="section-tools">
+                            <div class="search-box">
+                                <input type="text" id="employeeSearch"
+                                       placeholder="Поиск по сотрудникам..." autocomplete="off">
+                            </div>
+                            <div class="page-actions">
+                                <button id="addEmployeeButton" type="button" class="btn-primary">➕ Добавить сотрудника</button>
+                                <button id="refreshEmployees" type="button">🔄 Обновить</button>
+                            </div>
+                        </div>
+
+						<div class="table-card">
+
+							<table>
+
+								<thead>
+									<tr>
+										<th>ID</th>
+										<th>ФИО</th>
+										<th>Должность</th>
+										<th>Дата найма</th>
+										<th>Зарплата</th>
+										<th>Отдел</th>
+										<th>Действия</th>
+									</tr>
+								</thead>
+
+								<tbody id="employeesTable"></tbody>
+
+							</table>
+
+						</div>
+
+					</div>
+
+				</section>
+
+			</main>
+
+		</div>
+
+		<!-- Окно деталей заказа -->
+		<div id="orderModal" class="modal hidden">
+
+			<div class="modal-content">
+
+				<div class="modal-header">
+					<h2>Детали заказа</h2>
+
+					<button id="closeOrderModal" class="close-button">
+						×
+					</button>
+				</div>
+
+				<div id="orderDetailsContent">
+					Загрузка...
+				</div>
+
+			</div>
+
+		</div>
+
+        <!-- Окно добавления / редактирования складской позиции -->
+        <div id="stockModal" class="modal hidden">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 id="stockModalTitle">Новая складская позиция</h2>
+                    <button id="closeStockModal" class="close-button" type="button">×</button>
+                </div>
+                <form id="stockForm" class="entity-form">
+                    <input type="hidden" id="stockId">
+                    <label>
+                        Склад
+                        <select id="stockWarehouse" required></select>
+                    </label>
+                    <label>
+                        Товар
+                        <select id="stockProduct" required></select>
+                    </label>
+                    <div class="form-row">
+                        <label>
+                            Текущее количество
+                            <input type="number" id="stockQuantity" min="0" step="1" required>
+                        </label>
+                        <label>
+                            Минимальный запас
+                            <input type="number" id="stockMinimumQuantity" min="0" step="1" required>
+                        </label>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="primary-button">Сохранить</button>
+                        <button type="button" id="cancelStock" class="secondary-button">Отмена</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+		<!-- ========================================== -->
+		<!-- Окно добавления / редактирования сотрудника -->
+		<!-- ========================================== -->
+
+		<div id="employeeModal" class="modal hidden">
+
+			<div class="modal-content">
+
+				<div class="modal-header">
+
+					<h2 id="employeeModalTitle">
+						Новый сотрудник
+					</h2>
+
+					<button
+						id="closeEmployeeModal"
+						class="close-button"
+						type="button">
+						×
+					</button>
+
+				</div>
+
+
+				<form id="employeeForm" class="entity-form">
+
+					<input
+						type="hidden"
+						id="employeeId">
+
+
+						<label>
+							ФИО
+
+							<input
+								type="text"
+								id="employeeName"
+								required="">
+							</label>
+
+
+						<label>
+							Должность
+
+							<select
+								id="employeePosition"
+								required="">
+							</select>
+						</label>
+
+
+						<label>
+							Дата найма
+
+							<input
+								type="date"
+								id="employeeHireDate"
+								required="">
+							</label>
+
+
+						<label>
+							Зарплата
+
+							<input
+								type="number"
+								id="employeeSalary"
+								min="0"
+								step="0.01"
+								required="">
+							</label>
+
+
+						<label>
+							Отдел
+
+							<select
+								id="employeeDepartment"
+								required="">
+							</select>
+						</label>
+
+
+						<div class="form-actions">
+
+							<button
+								type="submit"
+								class="primary-button">
+								Сохранить
+							</button>
+
+							<button
+								type="button"
+								id="cancelEmployee"
+								class="secondary-button">
+								Отмена
+							</button>
+
+						</div>
+
+					</form>
+
+			</div>
+
+		</div>
+
+		<!-- Окно создания заказа -->
+		<div id="orderModalCreate" class="modal hidden">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h2>Новый заказ</h2>
+					<button id="closeOrderModalCreate" class="close-button">×</button>
+				</div>
+
+                <form id="orderForm" class="entity-form">
+                    <div class="form-row">
+                        <label>
+                            Дата и время заказа
+                            <input type="datetime-local" id="orderDate" required>
+                        </label>
+                        <label>
+                            Статус
+                            <select id="orderStatus" required>
+                                <option value="Новый">Новый</option>
+                                <option value="Сборка">Сборка</option>
+                                <option value="Отгружен">Отгружен</option>
+                                <option value="Отменен">Отменен</option>
+                            </select>
+                        </label>
+                    </div>
+
+                    <label>
+                        Клиент
+						<select id="orderClientSelect" required=""></select>
+					</label>
+
+					<label>
+						Сотрудник
+						<select id="orderEmployeeSelect" required=""></select>
+					</label>
+
+					<div class="form-group">
+						<label for="orderProductSelect">Товар</label>
+
+						<div class="order-item-add">
+							<select id="orderProductSelect">
+								<option value="">Выберите товар</option>
+							</select>
+
+							<input
+								type="number"
+								id="orderQuantity"
+								min="1"
+								value="1"
+								placeholder="Количество"
+        >
+
+								<button
+									type="button"
+									id="addOrderItemButton"
+									class="secondary-button"
+        >
+									Добавить
+								</button>
+							</div>
+					</div>
+
+					<div class="order-items-block">
+
+						<h4>Позиции заказа</h4>
+
+						<div id="orderItemsList">
+							<div class="empty-order-items">
+								Товары пока не добавлены
+							</div>
+						</div>
+
+						<div class="order-total-preview">
+							<span>Итого:</span>
+							<strong id="orderTotalPreview">0 ₽</strong>
+						</div>
+
+					</div>
+
+					<div class="form-actions">
+						<button type="submit">Сохранить</button>
+						<button type="button" id="cancelOrder">Отмена</button>
+					</div>
+				</form>
+			</div>
+		</div>
+
+		<!-- Модальное окно подтверждения удаления заказа -->
+<div id="deleteOrderModal" class="modal hidden">
+    <div class="modal-content delete-modal-content">
+
+        <div class="modal-header">
+            <h2>Удаление заказа</h2>
+            <button
+                type="button"
+                class="modal-close"
+                id="closeDeleteOrderModal">
+                ×
+            </button>
+        </div>
+
+        <div class="modal-body delete-modal-body">
+            <p class="delete-warning">
+                Вы действительно хотите удалить заказ
+                <strong id="deleteOrderNumber"></strong>?
+            </p>
+
+            <p class="delete-description">
+                Это действие нельзя отменить.
+                Все товары, связанные с этим заказом, также будут удалены
+                из его состава.
+            </p>
+        </div>
+
+        <div class="modal-footer">
+            <button
+                type="button"
+                class="btn-secondary"
+                id="cancelDeleteOrder">
+                Отмена
+            </button>
+
+            <button
+                type="button"
+                class="btn-danger"
+                id="confirmDeleteOrder">
+                Удалить
+            </button>
+        </div>
+
+    </div>
+</div>
+
+<!-- Уведомление -->
+<div id="toast" class="toast hidden">
+    <span id="toastIcon"></span>
+    <span id="toastMessage"></span>
+</div>
+		
+		
+		<script src="js/app.js"></script>
+
+	</body>
+</html>
