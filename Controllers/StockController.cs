@@ -1,5 +1,6 @@
 using ClServApp.Server.Models;
 using ClServApp.Server.Services;
+using ClServApp.Server.Security;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ClServApp.Server.Controllers
@@ -16,6 +17,7 @@ namespace ClServApp.Server.Controllers
         }
 
         [HttpGet]
+        [AppRoleAuthorize(AppRoles.Administrator, AppRoles.Sales, AppRoles.Warehouse, AppRoles.Supervisor)]
         public async Task<ActionResult<List<StockItem>>> GetStock()
         {
             try
@@ -33,6 +35,7 @@ namespace ClServApp.Server.Controllers
         }
 
         [HttpGet("low")]
+        [AppRoleAuthorize(AppRoles.Administrator, AppRoles.Sales, AppRoles.Warehouse, AppRoles.Supervisor)]
         public async Task<ActionResult<List<LowStockItem>>> GetLowStock()
         {
             try
@@ -50,6 +53,7 @@ namespace ClServApp.Server.Controllers
         }
 
         [HttpGet("warehouses")]
+        [AppRoleAuthorize(AppRoles.Administrator, AppRoles.Sales, AppRoles.Warehouse, AppRoles.Supervisor)]
         public async Task<IActionResult> GetWarehouses()
         {
             try
@@ -68,6 +72,7 @@ namespace ClServApp.Server.Controllers
         }
 
         [HttpPost]
+        [AppRoleAuthorize(AppRoles.Administrator, AppRoles.Warehouse)]
         public async Task<IActionResult> AddStock([FromBody] StockCreate item)
         {
             try
@@ -94,6 +99,7 @@ namespace ClServApp.Server.Controllers
         }
 
         [HttpPut("{id:int}")]
+        [AppRoleAuthorize(AppRoles.Administrator, AppRoles.Warehouse)]
         public async Task<IActionResult> UpdateStock(int id, [FromBody] StockCreate item)
         {
             try
@@ -124,6 +130,7 @@ namespace ClServApp.Server.Controllers
         }
 
         [HttpDelete("{id:int}")]
+        [AppRoleAuthorize(AppRoles.Administrator, AppRoles.Warehouse)]
         public async Task<IActionResult> DeleteStock(int id)
         {
             try

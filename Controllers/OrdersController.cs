@@ -1,5 +1,6 @@
-﻿using ClServApp.Server.Models;
+using ClServApp.Server.Models;
 using ClServApp.Server.Services;
+using ClServApp.Server.Security;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ClServApp.Server.Controllers
@@ -16,6 +17,7 @@ namespace ClServApp.Server.Controllers
         }
 
         [HttpGet]
+        [AppRoleAuthorize(AppRoles.Administrator, AppRoles.Sales, AppRoles.Warehouse, AppRoles.Supervisor)]
         public async Task<ActionResult<List<Order>>> GetOrders()
         {
             try
@@ -35,6 +37,7 @@ namespace ClServApp.Server.Controllers
         }
 
         [HttpGet("{id}/details")]
+        [AppRoleAuthorize(AppRoles.Administrator, AppRoles.Sales, AppRoles.Warehouse, AppRoles.Supervisor)]
         public async Task<ActionResult<List<OrderDetail>>> GetOrderDetails(int id)
         {
             try
@@ -55,6 +58,7 @@ namespace ClServApp.Server.Controllers
         }
 
         [HttpPost]
+        [AppRoleAuthorize(AppRoles.Administrator, AppRoles.Sales)]
         public async Task<IActionResult> AddOrder([FromBody] OrderCreate order)
         {
             try
@@ -77,6 +81,7 @@ namespace ClServApp.Server.Controllers
         }
 
         [HttpGet("{id}/edit")]
+        [AppRoleAuthorize(AppRoles.Administrator, AppRoles.Sales)]
         public async Task<ActionResult<OrderEdit>> GetOrderForEdit(int id)
         {
             try
@@ -97,6 +102,7 @@ namespace ClServApp.Server.Controllers
         }
 
         [HttpPut("{id}")]
+        [AppRoleAuthorize(AppRoles.Administrator, AppRoles.Sales)]
         public async Task<IActionResult> UpdateOrder(
     int id,
     [FromBody] OrderEdit order)
@@ -121,6 +127,7 @@ namespace ClServApp.Server.Controllers
         }
 
         [HttpDelete("{id}")]
+        [AppRoleAuthorize(AppRoles.Administrator, AppRoles.Sales)]
         public async Task<IActionResult> DeleteOrder(int id)
         {
             try

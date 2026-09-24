@@ -1,5 +1,6 @@
-﻿using ClServApp.Server.Models;
+using ClServApp.Server.Models;
 using ClServApp.Server.Services;
+using ClServApp.Server.Security;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ClServApp.Server.Controllers
@@ -17,6 +18,7 @@ namespace ClServApp.Server.Controllers
 
         // GET: api/clients
         [HttpGet]
+        [AppRoleAuthorize(AppRoles.Administrator, AppRoles.Sales, AppRoles.Supervisor)]
         public async Task<ActionResult<List<Client>>> GetClients()
         {
             try
@@ -37,6 +39,7 @@ namespace ClServApp.Server.Controllers
 
         // GET: api/clients/{id}
         [HttpGet("{id:int}")]
+        [AppRoleAuthorize(AppRoles.Administrator, AppRoles.Sales, AppRoles.Supervisor)]
         public async Task<ActionResult<Client>> GetClient(int id)
         {
             if (id <= 0)
@@ -73,6 +76,7 @@ namespace ClServApp.Server.Controllers
 
         // POST: api/clients
         [HttpPost]
+        [AppRoleAuthorize(AppRoles.Administrator, AppRoles.Sales)]
         public async Task<IActionResult> AddClient(
             [FromBody] ClientCreate client)
         {
@@ -120,6 +124,7 @@ namespace ClServApp.Server.Controllers
 
         // PUT: api/clients/{id}
         [HttpPut("{id:int}")]
+        [AppRoleAuthorize(AppRoles.Administrator, AppRoles.Sales)]
         public async Task<IActionResult> UpdateClient(
             int id,
             [FromBody] ClientCreate client)
@@ -165,6 +170,7 @@ namespace ClServApp.Server.Controllers
 
         // DELETE: api/clients/{id}
         [HttpDelete("{id:int}")]
+        [AppRoleAuthorize(AppRoles.Administrator, AppRoles.Sales)]
         public async Task<IActionResult> DeleteClient(int id)
         {
             if (id <= 0)

@@ -11,6 +11,243 @@ function escapeHtml(value) {
         .replace(/'/g, "&#039;");
 }
 
+
+/* ==========================================
+   Учебная ролевая авторизация
+   ========================================== */
+
+const ROLE_CONFIG = {
+    administrator: {
+        name: "Администратор",
+        description: "Полный доступ ко всем разделам и операциям: товары, клиенты, заказы, сотрудники и склад.",
+        pages: ["products", "clients", "orders", "employees", "stock"],
+        write: ["products", "clients", "orders", "employees", "stock"]
+    },
+    sales: {
+        name: "Менеджер по продажам",
+        description: "Работа с клиентами и заказами. Товары и склад доступны для просмотра и поиска.",
+        pages: ["products", "clients", "orders", "stock"],
+        write: ["clients", "orders"]
+    },
+    warehouse: {
+        name: "Кладовщик",
+        description: "Учет складских остатков. Товары и заказы доступны для просмотра, складские позиции — для добавления и изменения.",
+        pages: ["products", "orders", "stock"],
+        write: ["stock"]
+    },
+    supervisor: {
+        name: "Руководитель",
+        description: "Просмотр и поиск данных во всех разделах без права добавления, редактирования и удаления.",
+        pages: ["products", "clients", "orders", "employees", "stock"],
+        write: []
+    }
+};
+
+let currentRole = null;
+const originalFetch = window.fetch.bind(window);
+
+window.fetch = function(input, init = {}) {
+    const url = typeof input === "string" ? input : (input?.url || "");
+
+    if (!url.startsWith("/api/")) {
+        return originalFetch(input, init);
+    }
+
+    const headers = new Headers(init.headers || (typeof input !== "string" ? input.headers : undefined));
+
+    if (currentRole) {
+        headers.set("X-App-Role", currentRole);
+    }
+
+    return originalFetch(input, {
+        ...init,
+        headers
+    });
+};
+
+function getRoleConfig() {
+    return currentRole ? ROLE_CONFIG[currentRole] : null;
+}
+
+function canViewPage(page) {
+    return !!getRoleConfig()?.pages.includes(page);
+}
+
+function canWritePage(page) {
+    return !!getRoleConfig()?.write.includes(page);
+}
+
+function getFirstAllowedPage() {
+    const preferredOrder = ["products", "clients", "orders", "employees", "stock"];
+    return preferredOrder.find(page => canViewPage(page)) || null;
+}
+
+function closeAllRoleSensitiveModals() {
+    document.querySelectorAll(".modal").forEach(modal => modal.classList.add("hidden"));
+}
+
+function activateAllowedPage(page) {
+    const targetPage = canViewPage(page) ? page : getFirstAllowedPage();
+    if (!targetPage) return;
+
+    const menuItem = document.querySelector(`.menu-item[data-page="${targetPage}"]`);
+    if (menuItem) {
+        menuItem.click();
+    }
+}
+
+function updateReadOnlyNotes() {
+    ["products", "clients", "orders", "employees", "stock"].forEach(page => {
+        const pageElement = document.getElementById(`${page}Page`);
+        if (!pageElement) return;
+
+        const existingNote = pageElement.querySelector(":scope > .permission-readonly-note");
+        const shouldShow = canViewPage(page) && !canWritePage(page);
+
+        if (shouldShow && !existingNote) {
+            const note = document.createElement("div");
+            note.className = "permission-readonly-note";
+            note.textContent = "Для выбранной роли раздел доступен только для просмотра и поиска.";
+            pageElement.prepend(note);
+        }
+        else if (!shouldShow && existingNote) {
+            existingNote.remove();
+        }
+    });
+}
+
+function applyRolePermissions() {
+    if (!currentRole) return;
+
+    document.querySelectorAll(".menu-item[data-page]").forEach(item => {
+        const page = item.dataset.page;
+        item.style.display = canViewPage(page) ? "" : "none";
+    });
+
+    const addButtonMap = {
+        products: "addProductButton",
+        clients: "addClientButton",
+        orders: "addOrderButton",
+        employees: "addEmployeeButton",
+        stock: "addStockButton"
+    };
+
+    Object.entries(addButtonMap).forEach(([page, id]) => {
+        const button = document.getElementById(id);
+        if (button) button.style.display = canWritePage(page) ? "" : "none";
+    });
+
+    ["products", "clients", "orders", "employees", "stock"].forEach(page => {
+        const pageElement = document.getElementById(`${page}Page`);
+        if (!pageElement) return;
+
+        pageElement.querySelectorAll(".edit-button, .delete-button").forEach(button => {
+            button.style.display = canWritePage(page) ? "" : "none";
+        });
+    });
+
+    updateReadOnlyNotes();
+}
+
+function updateRoleHeader() {
+    const config = getRoleConfig();
+    const currentRoleName = document.getElementById("currentRoleName");
+    const topRoleSelect = document.getElementById("topRoleSelect");
+
+    if (currentRoleName) {
+        currentRoleName.textContent = config?.name || "Не выбрана";
+    }
+
+    if (topRoleSelect && currentRole) {
+        topRoleSelect.value = currentRole;
+    }
+}
+
+function updateLoginRoleDescription() {
+    const select = document.getElementById("loginRoleSelect");
+    const description = document.getElementById("loginRoleDescription");
+    if (!select || !description) return;
+
+    description.textContent = ROLE_CONFIG[select.value]?.description || "";
+}
+
+function setRole(role, persist = true) {
+    if (!ROLE_CONFIG[role]) return;
+
+    currentRole = role;
+
+    if (persist) {
+        sessionStorage.setItem("clservapp.role", role);
+    }
+
+    closeAllRoleSensitiveModals();
+    updateRoleHeader();
+    applyRolePermissions();
+
+    const authModal = document.getElementById("authModal");
+    if (authModal) authModal.classList.add("hidden");
+
+    activateAllowedPage(getFirstAllowedPage());
+}
+
+function showLoginModal() {
+    currentRole = null;
+    sessionStorage.removeItem("clservapp.role");
+
+    const authModal = document.getElementById("authModal");
+    if (authModal) authModal.classList.remove("hidden");
+
+    const currentRoleName = document.getElementById("currentRoleName");
+    if (currentRoleName) currentRoleName.textContent = "Не выбрана";
+
+    updateLoginRoleDescription();
+}
+
+function initializeRoleAccess() {
+    const authModal = document.getElementById("authModal");
+    const loginRoleSelect = document.getElementById("loginRoleSelect");
+    const loginButton = document.getElementById("loginButton");
+    const topRoleSelect = document.getElementById("topRoleSelect");
+    const logoutButton = document.getElementById("logoutButton");
+
+    loginRoleSelect?.addEventListener("change", updateLoginRoleDescription);
+
+    loginButton?.addEventListener("click", () => {
+        setRole(loginRoleSelect.value);
+    });
+
+    topRoleSelect?.addEventListener("change", () => {
+        setRole(topRoleSelect.value);
+        if (typeof showToast === "function") {
+            showToast(`Роль изменена: ${ROLE_CONFIG[topRoleSelect.value].name}.`, "success");
+        }
+    });
+
+    logoutButton?.addEventListener("click", () => {
+        closeAllRoleSensitiveModals();
+        showLoginModal();
+    });
+
+    updateLoginRoleDescription();
+
+    const storedRole = sessionStorage.getItem("clservapp.role");
+    if (storedRole && ROLE_CONFIG[storedRole]) {
+        if (authModal) authModal.classList.add("hidden");
+        setRole(storedRole, false);
+    } else {
+        showLoginModal();
+    }
+
+    const permissionObserver = new MutationObserver(() => {
+        if (currentRole) applyRolePermissions();
+    });
+
+    permissionObserver.observe(document.body, {
+        childList: true,
+        subtree: true
+    });
+}
+
 /* ==========================================
    Удаление клиента
    ========================================== */
@@ -2034,7 +2271,7 @@ async function deleteStock(id) {
 // Начальная загрузка
 // ==========================================
 
-loadProducts();
+initializeRoleAccess();
 
 
 // ==========================================

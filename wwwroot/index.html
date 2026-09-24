@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ru">
 	<head>
 		<meta charset="UTF-8"/>
@@ -10,6 +10,37 @@
 </head>
 
 	<body>
+
+		<!-- Учебное окно авторизации по роли -->
+		<div id="authModal" class="auth-modal">
+			<div class="auth-card">
+				<div class="auth-brand">
+					<div class="auth-brand-mark">АП</div>
+					<div>
+						<div class="auth-title">АлкоПоставка</div>
+						<div class="auth-subtitle">Вход в информационную систему</div>
+					</div>
+				</div>
+
+				<label class="auth-label" for="loginRoleSelect">Роль сотрудника</label>
+				<select id="loginRoleSelect" class="auth-select">
+					<option value="sales">Менеджер по продажам</option>
+					<option value="warehouse">Кладовщик</option>
+					<option value="supervisor">Руководитель</option>
+					<option value="administrator">Администратор</option>
+				</select>
+
+				<div id="loginRoleDescription" class="auth-role-description"></div>
+
+				<button id="loginButton" type="button" class="auth-login-button">
+					Войти
+				</button>
+
+				<p class="auth-note">
+					Учебная авторизация: права определяются выбранной ролью.
+				</p>
+			</div>
+		</div>
 
 		<div class="app">
 
@@ -60,8 +91,20 @@
 						</p>
 					</div>
 
-					<div class="user-info">
-						Менеджер по продажам
+					<div class="role-panel">
+						<div class="role-panel-text">
+							<span class="role-panel-caption">Текущая роль</span>
+							<span id="currentRoleName" class="role-panel-name">Не выбрана</span>
+						</div>
+
+						<select id="topRoleSelect" class="role-select" aria-label="Сменить роль">
+							<option value="sales">Менеджер по продажам</option>
+							<option value="warehouse">Кладовщик</option>
+							<option value="supervisor">Руководитель</option>
+							<option value="administrator">Администратор</option>
+						</select>
+
+						<button id="logoutButton" type="button" class="role-exit-button">Выйти</button>
 					</div>
 				</header>
 
